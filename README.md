@@ -2,6 +2,8 @@
 This is a simple Tasks app with support for projects. It uses Laravel, Inertia & Vue as it was created from the starter kit.
 
 ### Setup
+Repository: https://github.com/massivebrains/task-segun-olaiya
+
 1. Pull this repo and update the Database `.env` keys
 2. Run `composer install` and `npm install`
 3. Run `php artisan migrate`
