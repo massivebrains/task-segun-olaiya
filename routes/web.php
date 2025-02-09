@@ -5,17 +5,10 @@ use App\Http\Controllers\Tasks\DeleteTaskController;
 use App\Http\Controllers\Tasks\GetTasksController;
 use App\Http\Controllers\Tasks\SaveTaskController;
 use App\Http\Controllers\Tasks\UpdatePrioritiesController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect('/register');
 });
 
 Route::get('/dashboard', GetTasksController::class)->middleware(['auth', 'verified'])->name('dashboard');
