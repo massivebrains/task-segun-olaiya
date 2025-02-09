@@ -15,12 +15,17 @@ const props = defineProps({
   tasks: {
     type: Array,
   },
+  projects: {
+    type: Array,
+  },
 });
 
 const form = useForm({
   id: "",
   name: "",
   priority: "0",
+  project_id: "",
+  new_project_name: "",
 });
 
 const showFormModal = ref(false);
@@ -45,6 +50,7 @@ watch(taskList, async (tasks) => {
 
 const editTask = (selectedTask) => {
   form.id = selectedTask.id.toString();
+  form.project_id = selectedTask.project_id;
   form.name = selectedTask.name;
   form.priority = selectedTask.priority;
   showFormModal.value = true;
@@ -113,14 +119,15 @@ const deleteTask = (selectedTask) => {
       <Modal :show="showFormModal" @close="closeModal">
         <section class="p-8">
           <header>
-            <h2 class="text-lg font-medium text-gray-900">Task Form</h2>
-            <p class="mt-1 text-sm text-gray-600">Add New Task</p>
+            <h2 class="text-lg font-medium text-gray-900">
+              {{ form.id ? "Edit Task" : "Create Task" }}
+            </h2>
+            <p class="mt-1 text-sm text-gray-600">Task form</p>
           </header>
 
           <form @submit.prevent="form.post(route('task.save'))" class="mt-6 space-y-6">
             <div>
               <InputLabel for="name" value="Name" />
-
               <TextInput
                 id="name"
                 type="text"
@@ -130,13 +137,38 @@ const deleteTask = (selectedTask) => {
                 autofocus
                 autocomplete="name"
               />
-
               <InputError class="mt-2" :message="form.errors.name" />
+            </div>
+
+            <div class="flex justify-between gap-4">
+              <div class="w-1/2">
+                <InputLabel for="name" value="Select Project" />
+                <select
+                  class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mt-1 block w-full"
+                  v-model="form.project_id"
+                >
+                  <option v-for="project in projects" :key="project.id">
+                    {{ project.name }}
+                  </option>
+                </select>
+                <InputError class="mt-2" :message="form.errors.project_id" />
+              </div>
+
+              <div class="w-1/2">
+                <InputLabel for="name" value="Or create new project" />
+                <TextInput
+                  id="new_project_name"
+                  type="text"
+                  class="mt-1 block w-full"
+                  placeholder="Enter new Project Name"
+                  v-model="form.new_project_name"
+                />
+                <InputError class="mt-2" :message="form.errors.new_project_name" />
+              </div>
             </div>
 
             <div>
               <InputLabel for="priority" value="Priority" />
-
               <TextInput
                 id="priority"
                 type="text"
