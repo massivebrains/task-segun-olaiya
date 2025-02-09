@@ -24,6 +24,8 @@ class SaveTaskRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'priority' => 'integer',
+            'project_id' => ['required_without:new_project_name', 'prohibits:new_project_name'],
+            'new_project_name' => ['required_without:project_id', 'prohibits:project_id'],
         ];
     }
 }
