@@ -2,13 +2,16 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { ref } from "vue";
+import SecondaryButton from "@/Components/SecondaryButton.vue";
+import { ref, watch } from "vue";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
-defineProps({
+import draggable from "vuedraggable";
+
+const props = defineProps({
   tasks: {
     type: Array,
   },
@@ -27,6 +30,18 @@ const closeModal = () => {
   form.clearErrors();
   form.reset();
 };
+
+const taskList = ref([...props.tasks]);
+watch(taskList, async (tasks) => {
+  const newTaskOrder = tasks.map(function (task, index) {
+    return {
+      id: task.id,
+      priority: index,
+    };
+  });
+
+  useForm({ tasks: newTaskOrder }).patch(route("tasks.update.priorities"));
+});
 
 const editTask = (selectedTask) => {
   form.id = selectedTask.id.toString();
@@ -65,28 +80,31 @@ const deleteTask = (selectedTask) => {
             </header>
 
             <ul id="todo-list" class="space-y-4 mt-4">
-              <li
-                v-for="task in tasks"
-                :key="task.id"
-                class="bg-gray-100 px-4 py-2 rounded-lg shadow cursor-move flex items-center justify-between"
-                draggable="true"
-              >
-                <span class="text-gray-700">{{ task.name }}</span>
-                <div>
-                  <button
-                    class="text-gray-500 hover:text-gray-700 mr-5"
-                    @click="() => editTask(task)"
+              <draggable v-model="taskList" itemKey="id">
+                <template #item="{ element }">
+                  <li
+                    :key="element.id"
+                    class="bg-gray-100 px-4 py-2 rounded-lg shadow cursor-move flex items-center justify-between mb-4"
+                    draggable="true"
                   >
-                    Edit
-                  </button>
-                  <button
-                    class="text-red-500 hover:text-red-700"
-                    @click="() => deleteTask(task)"
-                  >
-                    Remove
-                  </button>
-                </div>
-              </li>
+                    <span class="text-gray-700">{{ element.name }}</span>
+                    <div>
+                      <button
+                        class="text-gray-500 hover:text-gray-700 mr-5"
+                        @click="() => editTask(element)"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        class="text-red-500 hover:text-red-700"
+                        @click="() => deleteTask(element)"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </li>
+                </template>
+              </draggable>
             </ul>
           </section>
         </div>
@@ -129,6 +147,7 @@ const deleteTask = (selectedTask) => {
 
             <div class="flex items-center gap-4">
               <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+              <SecondaryButton @click="showFormModal = false">Close</SecondaryButton>
 
               <Transition
                 enter-active-class="transition ease-in-out"
