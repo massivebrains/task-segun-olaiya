@@ -13,7 +13,7 @@ class SaveTaskAction
     public function handle(User|Authenticatable $user, SaveTaskDTO $dto): Task
     {
         $project = $dto->project_id > 0
-            ? Project::whereUserId($user->id)->firstOrFail()
+            ? Project::whereUserId($user->id)->whereId($dto->project_id)->firstOrFail()
             : Project::create(['user_id' => $user->id, 'name' => $dto->new_project_name]);
 
         return Task::updateOrCreate(

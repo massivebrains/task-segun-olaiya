@@ -48,6 +48,11 @@ watch(taskList, async (tasks) => {
 });
 
 watch(filterProjectId, (projectId) => {
+  if (!projectId) {
+    taskList.value = [...props.tasks];
+    return;
+  }
+
   const filteredTasks = props.tasks.filter(
     (row) => parseInt(row.project_id) === parseInt(projectId)
   );
