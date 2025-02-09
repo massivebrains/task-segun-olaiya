@@ -4,8 +4,15 @@ import { Head, router } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Tasks from "@/Components/Tasks.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
+
+defineProps({
+  tasks: {
+    type: Array,
+  },
+});
 
 const form = useForm({
   name: "",
@@ -76,6 +83,14 @@ const form = useForm({
                 </Transition>
               </div>
             </form>
+
+            <header class="my-8">
+              <hr class="mb-4" />
+              <h2 class="text-lg font-medium text-gray-900">All Tasks</h2>
+              <p class="mt-1 text-sm text-gray-600">You can rearrange tasks</p>
+            </header>
+
+            <Tasks :tasks="tasks" />
           </section>
         </div>
       </div>
