@@ -29,11 +29,10 @@ const form = useForm({
 });
 
 const showFormModal = ref(false);
+const filterProjectId = ref("");
 
 const closeModal = () => {
-  showFormModal.value = false;
-  form.clearErrors();
-  form.reset();
+  window.location.reload();
 };
 
 const taskList = ref([...props.tasks]);
@@ -46,6 +45,14 @@ watch(taskList, async (tasks) => {
   });
 
   useForm({ tasks: newTaskOrder }).patch(route("tasks.update.priorities"));
+});
+
+watch(filterProjectId, (projectId) => {
+  const filteredTasks = props.tasks.filter(
+    (row) => parseInt(row.project_id) === parseInt(projectId)
+  );
+
+  taskList.value = filteredTasks;
 });
 
 const editTask = (selectedTask) => {
@@ -80,10 +87,29 @@ const deleteTask = (selectedTask) => {
       <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg p-8">
           <section>
-            <header>
-              <h2 class="text-lg font-medium text-gray-900">All Tasks</h2>
+            <header class="mb-8">
+              <h2 class="text-lg font-medium text-gray-900">
+                All Tasks
+                <select
+                  class="rounded-md border-gray-300 shadow-sm mt-1 text-sm"
+                  v-model="filterProjectId"
+                >
+                  <option value="">--Filter By Projects--</option>
+                  <option
+                    v-for="project in projects"
+                    :key="project.id"
+                    :value="project.id"
+                  >
+                    {{ project.name }}
+                  </option>
+                </select>
+              </h2>
               <p class="mt-1 text-sm text-gray-600">You can rearrange tasks</p>
             </header>
+
+            <div v-if="taskList.length === 0" class="space-y-4 mt-4">
+              Create New tasks or update your filters to see tasks
+            </div>
 
             <ul id="todo-list" class="space-y-4 mt-4">
               <draggable v-model="taskList" itemKey="id">
@@ -93,7 +119,9 @@ const deleteTask = (selectedTask) => {
                     class="bg-gray-100 px-4 py-2 rounded-lg shadow cursor-move flex items-center justify-between mb-4"
                     draggable="true"
                   >
-                    <span class="text-gray-700">{{ element.name }}</span>
+                    <span class="text-gray-700">
+                      {{ element.name }} <small>[{{ element.project.name }}]</small>
+                    </span>
                     <div>
                       <button
                         class="text-gray-500 hover:text-gray-700 mr-5"
@@ -184,7 +212,7 @@ const deleteTask = (selectedTask) => {
 
             <div class="flex items-center gap-4">
               <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-              <SecondaryButton @click="showFormModal = false">Close</SecondaryButton>
+              <SecondaryButton @click="closeModal">Close</SecondaryButton>
 
               <Transition
                 enter-active-class="transition ease-in-out"

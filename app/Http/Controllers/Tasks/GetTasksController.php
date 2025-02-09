@@ -13,7 +13,7 @@ class GetTasksController extends Controller
     public function __invoke()
     {
         return Inertia::render('Dashboard', [
-            'tasks' => Task::whereUserId(Auth::user()->id)->orderBy('priority')->get(),
+            'tasks' => Task::whereUserId(Auth::user()->id)->with('project')->orderBy('priority')->get(),
             'projects' => Project::whereUserId(Auth::user()->id)->get(),
         ]);
     }
