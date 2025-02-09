@@ -141,21 +141,26 @@ const deleteTask = (selectedTask) => {
             </div>
 
             <div class="flex justify-between gap-4">
-              <div class="w-1/2">
-                <InputLabel for="name" value="Select Project" />
+              <div :class="form.project_id ? 'w-full' : 'w-1/2'">
+                <InputLabel for="name" value="Project" />
                 <select
                   class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mt-1 block w-full"
                   v-model="form.project_id"
                 >
-                  <option v-for="project in projects" :key="project.id">
+                  <option value="">-- New Project --</option>
+                  <option
+                    v-for="project in projects"
+                    :key="project.id"
+                    :value="project.id"
+                  >
                     {{ project.name }}
                   </option>
                 </select>
                 <InputError class="mt-2" :message="form.errors.project_id" />
               </div>
 
-              <div class="w-1/2">
-                <InputLabel for="name" value="Or create new project" />
+              <div class="w-1/2" v-if="!form.project_id">
+                <InputLabel for="name" value="New Project Name" />
                 <TextInput
                   id="new_project_name"
                   type="text"
